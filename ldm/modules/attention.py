@@ -330,14 +330,16 @@ class BasicTransformerBlock(nn.Module):
         else:
             return self._forward(x, context, objs)
 
-    def _forward(self, x, context, objs): 
+    def _forward(self, x, context, objs):
+        # GLIGEN architecture
         x = self.attn1( self.norm1(x) ) + x 
         x = self.fuser(x, objs) # identity mapping in the beginning 
         x = self.attn2(self.norm2(x), context, context) + x
         x = self.ff(self.norm3(x)) + x
         return x
 
-    def _forward_reground(self, x, context, objs): 
+    def _forward_reground(self, x, context, objs):
+        # REGROUND architecture
         x = self.attn1( self.norm1(x) ) + x
         # parallel regrounding for gated self-attention and cross-attention
         x = self.fuser(x, objs) + self.attn2(self.norm2(x), context, context) + x
