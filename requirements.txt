@@ -1,0 +1,6 @@
+opencv-python 
+omegaconf
+einops
+openai-clip
+transformers
+kornia
