@@ -42,6 +42,15 @@ python gligen_inference.py
 # results
 Prompt = "a teddy bear blowing smoke sitting next to a bird".
 
+## Stable Diffusion
+<p float="left">
+  <img src="results/sd_1.png" width="18%" />
+  <img src="results/sd_2.png" width="18%" />
+  <img src="results/sd_3.png" width="18%" />
+  <img src="results/sd_4.png" width="18%" />
+  <img src="results/sd_5.png" width="18%" />
+</p>
+
 ## GLIGEN
 <p float="left">
   <img src="results/gligen_1.png" width="18%" />
