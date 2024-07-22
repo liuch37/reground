@@ -44,11 +44,11 @@ Prompt = "a teddy bear blowing smoke sitting next to a bird".
 
 ## GLIGEN
 <p float="left">
-  <img src="https://github.com/liuch37/reground/blob/master/results/gligen_1.png" width="15%" />
-  <img src="https://github.com/liuch37/reground/blob/master/results/gligen_2.png" width="15%" />
-  <img src="https://github.com/liuch37/reground/blob/master/results/gligen_3.png" width="15%" />
-  <img src="https://github.com/liuch37/reground/blob/master/results/gligen_4.png" width="15%" />
-  <img src="https://github.com/liuch37/reground/blob/master/results/gligen_5.png" width="15%" />
+  <img src="results/gligen_1.png" width="18%" />
+  <img src="results/gligen_2.png" width="18%" />
+  <img src="results/gligen_3.png" width="18%" />
+  <img src="results/gligen_4.png" width="18%" />
+  <img src="results/gligen_5.png" width="18%" />
 </p>
 
 ## REGROUND
