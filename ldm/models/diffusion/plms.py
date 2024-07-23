@@ -7,7 +7,7 @@ from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, mak
 
 
 class PLMSSampler(object):
-    def __init__(self, diffusion, model, schedule="linear", alpha_generator_func=None, set_alpha_scale=None, pho=1.0):
+    def __init__(self, diffusion, model, schedule="linear", alpha_generator_func=None, set_alpha_scale=None, rho=1.0):
         super().__init__()
         self.diffusion = diffusion
         self.model = model
@@ -16,7 +16,7 @@ class PLMSSampler(object):
         self.schedule = schedule
         self.alpha_generator_func = alpha_generator_func
         self.set_alpha_scale = set_alpha_scale
-        self.pho = pho
+        self.rho = rho
 
     def register_buffer(self, name, attr):
         if type(attr) == torch.Tensor:
@@ -60,11 +60,11 @@ class PLMSSampler(object):
     @torch.no_grad()
     def sample(self, S, shape, input, uc=None, guidance_scale=1, mask=None, x0=None):
         self.make_schedule(ddim_num_steps=S)
-        return self.plms_sampling(shape, input, uc, guidance_scale, mask=mask, x0=x0, pho=self.pho) #pho to control gated self-attention
+        return self.plms_sampling(shape, input, uc, guidance_scale, mask=mask, x0=x0, rho=self.rho) #rho to control gated self-attention
 
 
     @torch.no_grad()
-    def plms_sampling(self, shape, input, uc=None, guidance_scale=1, mask=None, x0=None, pho=1.0):
+    def plms_sampling(self, shape, input, uc=None, guidance_scale=1, mask=None, x0=None, rho=1.0):
 
         b = shape[0]
         
@@ -100,7 +100,7 @@ class PLMSSampler(object):
                 img = img_orig * mask + (1. - mask) * img
                 input["x"] = img
             # gated self-attention control
-            if i <= pho * total_steps:
+            if i <= rho * total_steps:
                 beta_t = 1.0
             else:
                 beta_t = 0.0

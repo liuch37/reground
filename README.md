@@ -36,7 +36,7 @@ def forward(self, x, context, objs):
 # inference
 Run the below command.
 ```
-python gligen_inference.py
+python gligen_inference.py --rho 0.3
 ```
 
 # results
@@ -60,5 +60,5 @@ Prompt = "a teddy bear blowing smoke sitting next to a bird".
   <img src="results/gligen_5.png" width="18%" />
 </p>
 
-## REGROUND with scheduling parameter pho=0.3
+## REGROUND with scheduling parameter $\rho=0.3$
 Can not reproduce.
