@@ -17,7 +17,7 @@ import torchvision.transforms.functional as F
 import torchvision.transforms.functional as TF
 import torchvision.transforms as transforms
 
-device = "cpu"
+device = "cuda"
 
 def read_official_ckpt(ckpt_path):      
     "Read offical pretrained SD ckpt and convert into my style" 
