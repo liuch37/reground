@@ -51,6 +51,8 @@ python gligen_inference.py --rho 0.3
 # results
 Prompt = "a teddy bear blowing smoke sitting next to a bird".
 
+Bounding boxes = [0.0,0.09,0.33,0.76], [0.55,0.11,1.0,0.8].
+
 ## Stable Diffusion
 <p float="left">
   <img src="results/sd_1.png" width="18%" />
