@@ -121,7 +121,7 @@ class PLMSSampler(object):
         def get_model_output(input):
             e_t = self.model(input) 
             if uc is not None and guidance_scale != 1:
-                unconditional_input = dict(x=input["x"], timesteps=input["timesteps"], context=uc, inpainting_extra_input=input["inpainting_extra_input"], grounding_extra_input=input['grounding_extra_input'])
+                unconditional_input = dict(x=input["x"], timesteps=input["timesteps"], context=uc, inpainting_extra_input=input["inpainting_extra_input"], grounding_extra_input=input['grounding_extra_input'], beta_t=input['beta_t'])
                 e_t_uncond = self.model( unconditional_input ) 
                 e_t = e_t_uncond + guidance_scale * (e_t - e_t_uncond)
             return e_t
