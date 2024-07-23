@@ -69,5 +69,20 @@ Prompt = "a teddy bear blowing smoke sitting next to a bird".
   <img src="results/gligen_5.png" width="18%" />
 </p>
 
-## REGROUND with scheduling parameter $\rho=0.3$
-Can not reproduce.
+## REGROUND with scheduling parameter $\rho=0.1$
+<p float="left">
+  <img src="results/reground_0p1_1.png" width="18%" />
+  <img src="results/reground_0p1_2.png" width="18%" />
+  <img src="results/reground_0p1_3.png" width="18%" />
+  <img src="results/reground_0p1_4.png" width="18%" />
+  <img src="results/reground_0p1_5.png" width="18%" />
+</p>
+
+## REGROUND with scheduling parameter $\rho=0.146875$
+<p float="left">
+  <img src="results/reground_0p146875_1.png" width="18%" />
+  <img src="results/reground_0p146875_2.png" width="18%" />
+  <img src="results/reground_0p146875_3.png" width="18%" />
+  <img src="results/reground_0p146875_4.png" width="18%" />
+  <img src="results/reground_0p146875_5.png" width="18%" />
+</p>
