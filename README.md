@@ -33,6 +33,15 @@ def forward(self, x, context, objs):
         return self._forward_reground(x, context, objs, beta_t)
 ```
 
+Scaling hyperparameter $\beta_t$ for gated self-attention is implemented in ```ldm/models/diffusion/plms.py``` as follows.
+```python
+# gated self-attention control
+if i <= rho * total_steps:
+    beta_t = 1.0
+else:
+    beta_t = 0.0
+```
+
 # inference
 Run the below command.
 ```
