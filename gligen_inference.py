@@ -416,7 +416,7 @@ def run(meta, config, starting_noise=None):
         sampler = DDIMSampler(diffusion, model, alpha_generator_func=alpha_generator_func, set_alpha_scale=set_alpha_scale)
         steps = 250 
     else:
-        sampler = PLMSSampler(diffusion, model, alpha_generator_func=alpha_generator_func, set_alpha_scale=set_alpha_scale)
+        sampler = PLMSSampler(diffusion, model, alpha_generator_func=alpha_generator_func, set_alpha_scale=set_alpha_scale, pho=args.pho)
         steps = 50 
 
 
@@ -488,6 +488,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=5, help="")
     parser.add_argument("--no_plms", action='store_true', help="use DDIM instead. WARNING: I did not test the code yet")
     parser.add_argument("--guidance_scale", type=float,  default=7.5, help="")
+    parser.add_argument("--pho", type=float,  default=1.0, help="Dynamic activation control for gated self-attention [0.0, 1.0]")
     parser.add_argument("--negative_prompt", type=str,  default='longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', help="")
     #parser.add_argument("--negative_prompt", type=str,  default=None, help="")
     args = parser.parse_args()
@@ -499,7 +500,7 @@ if __name__ == "__main__":
         # - - - - - - - - GLIGEN on text grounding for generation - - - - - - - - # 
         dict(
             ckpt = "./gligen_checkpoints/checkpoint_generation_text.pth",
-            prompt = "a teddy bear sitting next to a bird",
+            prompt = "a teddy bear blowing smoke sitting next to a bird",
             phrases = ['a teddy bear', 'a bird'],
             locations = [ [0.0,0.09,0.33,0.76], [0.55,0.11,1.0,0.8] ],
             alpha_type = [0.3, 0.0, 0.7],

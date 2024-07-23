@@ -14,7 +14,7 @@ pip install requirements.txt
 4. Download a checkpoint from [huggingface](https://huggingface.co/gligen/gligen-generation-text-box/blob/main/diffusion_pytorch_model.bin), rename ```diffusion_pytorch_model.bin``` to ```checkpoint_generation_text.pth```, and place it into a new folder ```./gligen_checkpoints```.
 
 # reground modification
-Theoretically from the paper, the following lines in ```ldm/modules/attention.py```
+Theoretically from the paper, we can form the re-wiring operation for gated self-attention while inserting the controlling factor ```beta_t``` to the gated self-attention. It can be implemented in the following lines in ```ldm/modules/attention.py```.
 ```python
 def forward(self, x, context, objs):
 #    return checkpoint(self._forward, (x, context, objs), self.parameters(), self.use_checkpoint)
@@ -28,9 +28,9 @@ can be replaced with
 def forward(self, x, context, objs):
 #    return checkpoint(self._forward_reground, (x, context, objs), self.parameters(), self.use_checkpoint)
     if self.use_checkpoint and x.requires_grad:
-        return checkpoint.checkpoint(self._forward_reground, x, context, objs)
+        return checkpoint.checkpoint(self._forward_reground, x, context, objs, beta_t)
     else:
-        return self._forward_reground(x, context, objs)
+        return self._forward_reground(x, context, objs, beta_t)
 ```
 
 # inference
@@ -60,5 +60,5 @@ Prompt = "a teddy bear blowing smoke sitting next to a bird".
   <img src="results/gligen_5.png" width="18%" />
 </p>
 
-## REGROUND
+## REGROUND with scheduling parameter pho=0.3
 Can not reproduce.

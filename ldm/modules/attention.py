@@ -323,12 +323,12 @@ class BasicTransformerBlock(nn.Module):
             assert False 
 
 
-    def forward(self, x, context, objs):
-#        return checkpoint(self._forward, (x, context, objs), self.parameters(), self.use_checkpoint)
+    def forward(self, x, context, objs, beta_t):
+#        return checkpoint(self._forward_reground, (x, context, objs), self.parameters(), self.use_checkpoint)
         if self.use_checkpoint and x.requires_grad:
-            return checkpoint.checkpoint(self._forward, x, context, objs)
+            return checkpoint.checkpoint(self._forward_reground, x, context, objs, beta_t)
         else:
-            return self._forward(x, context, objs)
+            return self._forward_reground(x, context, objs, beta_t)
 
     def _forward(self, x, context, objs):
         # GLIGEN architecture
@@ -338,11 +338,11 @@ class BasicTransformerBlock(nn.Module):
         x = self.ff(self.norm3(x)) + x
         return x
 
-    def _forward_reground(self, x, context, objs):
+    def _forward_reground(self, x, context, objs, beta_t):
         # REGROUND architecture
         x = self.attn1( self.norm1(x) ) + x
         # parallel regrounding for gated self-attention and cross-attention
-        x = self.fuser(x, objs) + self.attn2(self.norm2(x), context, context) + x
+        x = beta_t * self.fuser(x, objs) + self.attn2(self.norm2(x), context, context) + x
         x = self.ff(self.norm3(x)) + x
         return x
 
@@ -371,14 +371,14 @@ class SpatialTransformer(nn.Module):
                                               stride=1,
                                               padding=0))
 
-    def forward(self, x, context, objs):
+    def forward(self, x, context, objs, beta_t):
         b, c, h, w = x.shape
         x_in = x
         x = self.norm(x)
         x = self.proj_in(x)
         x = rearrange(x, 'b c h w -> b (h w) c')
         for block in self.transformer_blocks:
-            x = block(x, context, objs)
+            x = block(x, context, objs, beta_t)
         x = rearrange(x, 'b (h w) c -> b c h w', h=h, w=w)
         x = self.proj_out(x)
         return x + x_in

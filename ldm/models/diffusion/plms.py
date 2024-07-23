@@ -7,7 +7,7 @@ from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, mak
 
 
 class PLMSSampler(object):
-    def __init__(self, diffusion, model, schedule="linear", alpha_generator_func=None, set_alpha_scale=None):
+    def __init__(self, diffusion, model, schedule="linear", alpha_generator_func=None, set_alpha_scale=None, pho=1.0):
         super().__init__()
         self.diffusion = diffusion
         self.model = model
@@ -16,6 +16,7 @@ class PLMSSampler(object):
         self.schedule = schedule
         self.alpha_generator_func = alpha_generator_func
         self.set_alpha_scale = set_alpha_scale
+        self.pho = pho
 
     def register_buffer(self, name, attr):
         if type(attr) == torch.Tensor:
@@ -59,11 +60,11 @@ class PLMSSampler(object):
     @torch.no_grad()
     def sample(self, S, shape, input, uc=None, guidance_scale=1, mask=None, x0=None):
         self.make_schedule(ddim_num_steps=S)
-        return self.plms_sampling(shape, input, uc, guidance_scale, mask=mask, x0=x0)
+        return self.plms_sampling(shape, input, uc, guidance_scale, mask=mask, x0=x0, pho=self.pho) #pho to control gated self-attention
 
 
     @torch.no_grad()
-    def plms_sampling(self, shape, input, uc=None, guidance_scale=1, mask=None, x0=None):
+    def plms_sampling(self, shape, input, uc=None, guidance_scale=1, mask=None, x0=None, pho=1.0):
 
         b = shape[0]
         
@@ -98,8 +99,12 @@ class PLMSSampler(object):
                 img_orig = self.diffusion.q_sample(x0, ts)  
                 img = img_orig * mask + (1. - mask) * img
                 input["x"] = img
-
-            img, pred_x0, e_t = self.p_sample_plms(input, ts, index=index, uc=uc, guidance_scale=guidance_scale, old_eps=old_eps, t_next=ts_next)
+            # gated self-attention control
+            if i <= pho * total_steps:
+                beta_t = 1.0
+            else:
+                beta_t = 0.0
+            img, pred_x0, e_t = self.p_sample_plms(input, ts, index=index, uc=uc, guidance_scale=guidance_scale, old_eps=old_eps, t_next=ts_next, beta_t=beta_t)
             input["x"] = img
             old_eps.append(e_t)
             if len(old_eps) >= 4:
@@ -109,7 +114,7 @@ class PLMSSampler(object):
 
 
     @torch.no_grad()
-    def p_sample_plms(self, input, t, index, guidance_scale=1., uc=None, old_eps=None, t_next=None):
+    def p_sample_plms(self, input, t, index, guidance_scale=1., uc=None, old_eps=None, t_next=None, beta_t=1.0):
         x = deepcopy(input["x"]) 
         b = x.shape[0]
 
@@ -138,7 +143,8 @@ class PLMSSampler(object):
             x_prev = a_prev.sqrt() * pred_x0 + dir_xt + noise
             return x_prev, pred_x0
 
-        input["timesteps"] = t 
+        input["timesteps"] = t
+        input["beta_t"] = beta_t
         e_t = get_model_output(input)
         if len(old_eps) == 0:
             # Pseudo Improved Euler (2nd order)

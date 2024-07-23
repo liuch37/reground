@@ -40,12 +40,12 @@ class TimestepEmbedSequential(nn.Sequential, TimestepBlock):
     support it as an extra input.
     """
 
-    def forward(self, x, emb, context, objs):
+    def forward(self, x, emb, context, objs, beta_t=1.0):
         for layer in self:
             if isinstance(layer, TimestepBlock):
                 x = layer(x, emb)
             elif isinstance(layer, SpatialTransformer):
-                x = layer(x, context, objs)
+                x = layer(x, context, objs, beta_t)
             else:
                 x = layer(x)
         return x
@@ -449,17 +449,20 @@ class UNetModel(nn.Module):
         # Text input 
         context = input["context"]
 
+        # beta control for self-attention
+        beta_t = input["beta_t"]
+
         # Start forwarding 
         hs = []
         for module in self.input_blocks:
-            h = module(h, emb, context, objs)
+            h = module(h, emb, context, objs, beta_t)
             hs.append(h)
 
         h = self.middle_block(h, emb, context, objs)
 
         for module in self.output_blocks:
             h = th.cat([h, hs.pop()], dim=1)
-            h = module(h, emb, context, objs)
+            h = module(h, emb, context, objs, beta_t)
 
         return self.out(h)
 
